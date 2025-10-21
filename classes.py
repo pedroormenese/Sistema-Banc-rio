@@ -1,18 +1,29 @@
 from abc import ABC, abstractmethod
 from typing import override
 
+
+class Conta:
+    pass
+# ========================================== Classe banco e atributos
+class Banco:
+    def __init__(self, nome, endereco, *contas):
+        self.__nome = nome
+        self.__endereco = endereco
+        self.__contas: Conta = contas
+
+
 # ========================================== Interface das operações financeiras
 class OperacoesFinanceiras(ABC):
     @abstractmethod
-    def sacar(self):
+    def sacar(self, quantidade: float):
         pass
 
     @abstractmethod
-    def transferir(self):
+    def transferir(self, quantidade: float, conta: Conta):
         pass
 
     @abstractmethod
-    def depositar(self):
+    def depositar(self, quantidade: float):
         pass
 
 # ========================================== Classe conta, tipos de conta (Corrente e Poupança) e seus métodos
@@ -26,11 +37,7 @@ class Conta(OperacoesFinanceiras):
     @abstractmethod
     def get_Numero(self):
         pass
-    
-    @abstractmethod
-    def genhat_Senha(self):
-        pass
-    
+
     @abstractmethod
     def get_Saldo(self):
         pass
@@ -44,24 +51,29 @@ class Corrente(Conta): # ======================= Conta Corrente
         return self.__numero
     
     @override
-    def get_Senha(self):
-        return self.__senha
-    
-    @override
     def get_Saldo(self):
         return self.__saldo
     
     @override
-    def sacar(self):
-        pass
+    def sacar(self, quantidade: float):
+        if self.get_Saldo() - quantidade >= 0:
+            self.__saldo -= quantidade
+            return "Saque realizado com sucesso"
+        else:
+            return "Saldo insuficiente"
 
     @override
-    def transferir(self):
-        pass
+    def transferir(self, quantidade: float, conta: Conta):
+        if self.get_Saldo() - quantidade >= 0:
+            self.__saldo -= quantidade
+            conta.__saldo += quantidade
+            return "Transferência realizada com sucesso"
+        else:
+            return "Saldo insuficiente"
 
     @override
-    def depositar(self):
-        pass
+    def depositar(self, quantidade: float):
+        self.__saldo += quantidade
 
 class Poupanca(Conta): # ======================= Conta Poupança
     def __init__(self, numero, senha, saldo):
@@ -70,7 +82,7 @@ class Poupanca(Conta): # ======================= Conta Poupança
     @override
     def get_Numero(self):
         return self.__numero
-    
+
     @override
     def get_Senha(self):
         return self.__senha
@@ -80,16 +92,32 @@ class Poupanca(Conta): # ======================= Conta Poupança
         return self.__saldo
 
     @override
-    def sacar(self):
-        pass
+    def sacar(self, quantidade: float):
+        if self.get_Saldo() >= 100:
+            if quantidade <= self.get_Saldo():
+                quantidade -= self.__saldo
+                return "Saque realizado com sucesso"
+            else:
+                return "Saldo insuficiente"
+        else:
+            return "Você deve possuir no mínimo R$100 para realizar um saque"
+        
 
     @override
-    def transferir(self):
-        pass
+    def transferir(self, quantidade: float, conta: Conta):
+        if self.get_Saldo() >= 100:
+            if quantidade <= self.get_Saldo():
+                quantidade -= self.__saldo
+                conta.__saldo += quantidade
+                return "Transferência realizada com sucesso"
+            else:
+                return "Saldo insuficiente"
+        else:
+            return "Você deve possuir no mínimo R$100 para realizar uma transferência"
 
     @override
-    def depositar(self):
-        pass
+    def depositar(self, quantidade: float):
+        self.__saldo += quantidade
 
 # ========================================== Classe cliente e seus métodos
 class Cliente:
@@ -100,16 +128,3 @@ class Cliente:
         self.__idade = idade
         self.__endereco = endereco
         self.__contas: Conta = contas
-
-    def depositar(self, quantidade: float, conta: Conta):
-        pass
-
-    def sacar(self, quantidade: float, conta: Conta):
-        pass
-
-# ========================================== Classe banco e atributos
-class Banco:
-    def __init__(self, nome, endereco, *contas):
-        self.__nome = nome
-        self.__endereco = endereco
-        self.__contas = contas
