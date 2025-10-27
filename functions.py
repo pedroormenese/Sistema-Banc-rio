@@ -1,7 +1,7 @@
 from classes import *
 import os
 
-banco = Banco("RoubaPoupança", "Xique-xique Bahia")
+banco = Banco("RoubaPoupança", "Xique-Xique Bahia")
 
 
 def cadastroCliente(banco: Banco): # Função para cadastro de clientes
@@ -38,40 +38,54 @@ def menu(banco: Banco):
     opcoes = ["Criar conta", "Acessar conta existente", "Sair"]
     contas_opcoes = ["Conta corrente", "Conta poupança"]
     n = 1
-    try:
-        if not banco.get_Clientes():
-            # ========================== Criando o cliente
+    while True:
+        try:
+            if not banco.get_Clientes():
+                # ========================== Criando o cliente
 
-            print(f"{banco}\nPrimeira vez aqui? Faça seu cadastro")
-            cadastroCliente()
-            os.system("pause")
-            os.system("clear")
-        
-    except Exception as e:
-        print("Erro: ", e)
+                print(f"{banco.get_Nome()}\nPrimeira vez aqui? Faça seu cadastro")
+                cadastroCliente()
+                os.system("pause")
+                os.system("clear")
+                break
+            
+        except Exception as e:
+            print("Erro: ", e)
 
     while True:
         try:
             print(f"Bem-vindo ao Banco {banco.get_Nome()}")
-            for opcao in opcoes:
-                print(f"{n} - {opcao}")
-                n+=1
-            n = 1
+            for num, opcao in enumerate(opcoes, 1):
+                print(f"{num} - {opcao}")
             i = int(input("Selecione uma das opções acima\n--> "))
             match i:
-                case 1:
-                    for opcao in contas_opcoes:
-                        print(f"{n} - {opcao}")
-                    i = int(input("Selecione uma das opções acima\n--> "))
-                    match i:
-                        case 1:
-                            pass
-                        case 2:
-                            pass
-                case 2:
-                    pass
-                case 3:
-                    pass
+                case 1: #Criar conta
+                    for num, opcao in enumerate(contas_opcoes, 1):
+                        print(f"{num} - {opcao}")
+                        i = int(input("Selecione uma das contas acima a serem criadas\n--> "))
+                        match i:
+                            case 1: #Criar conta Corrente
+
+                                #Fazer funções CRIAR_CONTA CORRENTE E CRIAR_CONTA POUPANÇA
+
+                                
+                                conta = Corrente()
+                            case 2: #Criar conta Poupança
+                                pass
+
+                case 2: #Acessar Conta existente
+                    for num, opcao in enumerate(contas_opcoes, 1):
+                        print(f"{num} - {opcao}")
+                        i = int(input("Selecione uma conta a ser acessada\n--> "))
+                        match i:
+                            case 1: #Acessar conta Corrente
+                                pass
+                            case 2: #Acessar conta Poupança
+                                pass
+                case 3: #Sair
+                    print("Saindo...")
+                    os.system("pause")
+                    break
                 case _:
                     print("Selecione uma das opções existentes")
                     os.system("pause")

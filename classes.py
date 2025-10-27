@@ -17,6 +17,7 @@ class Banco:
         self.__endereco = endereco
         self.__clientes: list[Cliente] = []
 
+
     def get_Nome(self):
         return self.__nome
     
@@ -80,23 +81,8 @@ class Corrente(Conta): # ======================= Conta Corrente
     def get_Saldo(self):
         return self.__saldo
     
-    @override
-    def sacar(self, quantidade: float):
-        if self.get_Saldo() - quantidade >= 0:
-            self.__saldo -= quantidade
-            return "Saque realizado com sucesso"
-        else:
-            return "Saldo insuficiente"
 
-    @override
-    def transferir(self, quantidade: float, conta: Conta):
-        if self.get_Saldo() - quantidade >= 0:
-            self.__saldo -= quantidade
-            conta.__saldo += quantidade
-            return "Transferência realizada com sucesso"
-        else:
-            return "Saldo insuficiente"
-
+        
     @override
     def depositar(self, quantidade: float):
         self.__saldo += quantidade
@@ -108,6 +94,25 @@ class Corrente(Conta): # ======================= Conta Corrente
     @override
     def get_Senha(self):
         return self.__senha
+    
+    @override
+    def sacar(self, quantidade: float):
+        if self.get_Saldo() - quantidade >= 0:
+            self.__saldo -= quantidade
+            return "Saque realizado com sucesso"
+        else:
+            return "Saldo insuficiente"
+        
+    @override
+    def transferir(self, quantidade: float, conta: Conta):
+        if self.get_Saldo() - quantidade >= 0:
+            self.__saldo -= quantidade
+            conta.depositar(quantidade)
+            return "Transferência realizada com sucesso"
+        else:
+            return "Saldo insuficiente"
+
+
 
 
 
@@ -138,22 +143,21 @@ class Poupanca(Conta): # ======================= Conta Poupança
         else:
             return "Você deve possuir no mínimo R$100 para realizar um saque"
         
+    @override
+    def depositar(self, quantidade: float):
+        self.__saldo += quantidade
 
     @override
     def transferir(self, quantidade: float, conta: Conta):
         if self.get_Saldo() >= 100:
             if quantidade <= self.get_Saldo():
                 quantidade -= self.__saldo
-                conta.__saldo += quantidade
+                conta.depositar(quantidade)
                 return "Transferência realizada com sucesso"
             else:
                 return "Saldo insuficiente"
         else:
             return "Você deve possuir no mínimo R$100 para realizar uma transferência"
-
-    @override
-    def depositar(self, quantidade: float):
-        self.__saldo += quantidade
 
 
 
@@ -198,9 +202,8 @@ class Cliente:
         self.__endereco = endereco
     
     def add_conta(self, conta: Conta):
-
         self.__contas.append(conta)
-        print(f"Conta {conta.get_Numero()} associada ao cliente {self.__nome}")
+        print(f"Conta {conta.get_Numero()} associada ao cliente {self.get_Nome()} {self.get_Sobrenome()}")
 
     def remover_conta(self, numero_conta: int):
         for conta in self.__contas:
@@ -215,7 +218,7 @@ class Cliente:
             print("Nenhuma conta associada")
             return
         
-        print(f"Contas de {self.__nome} {self.__sobrenome}")
+        print(f"Contas de {self.get_Nome()} {self.get_Sobrenome()}")
         for i, conta in enumerate(self.__contas, 1):
             if isinstance(conta, Corrente):
                 tipo = "Corrente"
@@ -224,7 +227,4 @@ class Cliente:
             else:
                 tipo = "Tipo desconhecido"
         
-            print(f"{i}. {tipo} Conta Nº: {conta.get_Numero()} | Saldo: R${conta.get_Saldo():.2f}")
-
-
-            
+            print(f"{i}. {tipo} Conta Nº: {conta.get_Numero()} | Saldo: R${conta.get_Saldo()}")
