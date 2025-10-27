@@ -63,10 +63,6 @@ class Conta(OperacoesFinanceiras): # ========================================== 
         pass
 
     @abstractmethod
-    def get_Numero(self):
-        pass
-
-    @abstractmethod
     def get_Senha(self):
         pass
 
@@ -169,7 +165,7 @@ class Cliente:
         self.__cpf = CPF
         self.__idade = idade
         self.__endereco = endereco
-        self.__contas: list[Conta] = []
+        self.__contas: list[Conta] = [] #associação
 
     def get_Nome(self):
         return self.__nome
@@ -200,3 +196,35 @@ class Cliente:
     
     def set_Endereco(self, endereco):
         self.__endereco = endereco
+    
+    def add_conta(self, conta: Conta):
+
+        self.__contas.append(conta)
+        print(f"Conta {conta.get_Numero()} associada ao cliente {self.__nome}")
+
+    def remover_conta(self, numero_conta: int):
+        for conta in self.__contas:
+            if conta.get_Numero() == numero_conta:
+                self.__contas.remove(conta)
+                print(f"Conta {numero_conta} removida")
+                return
+        print("Conta não encontrada")
+
+    def listar_contas(self): #Listar todas as contas do cliente
+        if not self.__contas:
+            print("Nenhuma conta associada")
+            return
+        
+        print(f"Contas de {self.__nome} {self.__sobrenome}")
+        for i, conta in enumerate(self.__contas, 1):
+            if isinstance(conta, Corrente):
+                tipo = "Corrente"
+            elif isinstance(conta, Poupanca):
+                tipo = "Poupança"
+            else:
+                tipo = "Tipo desconhecido"
+        
+            print(f"{i}. {tipo} Conta Nº: {conta.get_Numero()} | Saldo: R${conta.get_Saldo():.2f}")
+
+
+            
