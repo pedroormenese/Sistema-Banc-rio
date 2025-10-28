@@ -80,16 +80,10 @@ class Corrente(Conta): # ======================= Conta Corrente
     @override
     def get_Saldo(self):
         return self.__saldo
-    
-
         
     @override
     def depositar(self, quantidade: float):
         self.__saldo += quantidade
-
-    @override
-    def get_Numero(self):
-        return self.__numero
     
     @override
     def get_Senha(self):
@@ -136,7 +130,7 @@ class Poupanca(Conta): # ======================= Conta Poupança
     def sacar(self, quantidade: float):
         if self.get_Saldo() >= 100:
             if quantidade <= self.get_Saldo():
-                quantidade -= self.__saldo
+                self.__saldo -= quantidade
                 return "Saque realizado com sucesso"
             else:
                 return "Saldo insuficiente"
@@ -228,3 +222,8 @@ class Cliente:
                 tipo = "Tipo desconhecido"
         
             print(f"{i}. {tipo} Conta Nº: {conta.get_Numero()} | Saldo: R${conta.get_Saldo()}")
+
+    def get_Conta(self, numero: int, senha: str):
+        for conta in self.__contas:
+            if conta.get_Numero() == numero and conta.get_Senha() == senha:
+                return conta
