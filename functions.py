@@ -9,8 +9,8 @@ cliente3 = Cliente("Valter", "Victor", 13245678901, 86, "Campos do Jordão")
 def tratarErros(mensagem: str):
     while True:
         try:
-            mensagem = input(mensagem)
-            mensagem = int(mensagem)
+            i = input(mensagem)
+            mensagem = int(i)
             return mensagem
         except Exception:
             os.system("cls")
@@ -21,8 +21,8 @@ def tratarErros(mensagem: str):
 def tratarErrosOP(mensagem: str):
     while True:
         try:
-            mensagem = input(mensagem)
-            mensagem = float(mensagem)
+            i = input(mensagem)
+            mensagem = float(i)
             return mensagem
         except Exception:
             os.system("cls")
@@ -49,18 +49,22 @@ def cadastroCliente(banco: Banco): # Função para cadastro de clientes
 
 
 def acessarConta(cliente: Cliente): # Função para acesso de conta
-    try:
-        os.system("cls")
-        numero = tratarErros("Insira o CPF da conta: ")
-        senha = input("Insira a senha da conta: ")
+    while True:
+        try:
+            os.system("cls")
+            numero = tratarErros("Insira o CPF da conta: ")
+            senha = input("Insira a senha da conta: ")
 
-        conta = cliente.get_Conta(numero, senha)
-        if conta:
-            print("Acesso concedido à conta Nº", conta.get_Numero())
-            return conta
+            conta = cliente.get_Conta(numero, senha)
+            if conta:
+                print("Acesso concedido à conta Nº", conta.get_Numero())
+                return conta
+            else:
+                print("A conta não foi encontrada ou não existe.")
 
-    except Exception as e:
-        print("Erro: ", e)
+        except Exception as e:
+            print(f"Erro ao acessar a conta. Verifique se ela existe\nDetalhes do erro: {e}")
+            os.system("Pause")
 
 def criar_Corrente(cliente: Cliente):
     print("Criando conta Corrente")
@@ -82,38 +86,45 @@ def mainmenu(conta: Conta):
             opcoes = ["Sacar", "Depositar", "Transferência", "Extrato", "Sair"]
             for num, opcao in enumerate(opcoes, 1):
                 print(f"{num}. {opcao}\n")
-                i = tratarErros("Selecione uma opção\n--> ")
-                match i:
-                    case 1: #Fazer saque
-                        print("-------SAQUE-------")
-                        print((f"Você tem: R${conta.get_Saldo():.2f}\n Qual valor que você gostaria de sacar?"))
-                        quantidade = tratarErros("Insira o valor no espaço abaixo:\n\n--> ")
+            i = tratarErros("Selecione uma opção\n--> ")
+            match i:
+                case 1: #Fazer saque
+                    print("-------SAQUE-------")
+                    print((f"Você tem: R${conta.get_Saldo():.2f}\n Qual valor que você gostaria de sacar?"))
+                    quantidade = tratarErros("Insira o valor no espaço abaixo:\n\n--> ")
 
-                        if quantidade <= 0:
-                            print("Valor inválido")
-                            os.system("pause")
-                            os.system("cls")
-                            continue
-                        
-                        resultado = conta.sacar(quantidade)
-                        print(resultado)
-                    case 2:
-                        print("-------DEPÓSITO-------")
-                        print((f"Você tem: R${conta.get_Saldo():.2f}\n Qual valor que você gostaria de sacar?"))
-                        quantidade = tratarErrosOP("Insira o valor no espaço abaixo:\n\n--> ")
-                        resultado = conta.depositar(quantidade)
-                        print(resultado)
-                        
-                    case 3:
-                        pass
-                    case 4:
-                        pass
-                    case 5:
-                        os.system("cls")
-                        print("Retornando ao menu inicial...")
+                    if quantidade <= 0:
+                        print("Valor inválido")
                         os.system("pause")
                         os.system("cls")
-                        break
+                        continue
+                    
+                    resultado = conta.sacar(quantidade)
+                    print(resultado)
+
+                case 2: #Fazer depósito
+                    print("-------DEPÓSITO-------")
+                    print((f"Você tem: R${conta.get_Saldo()}\n Qual valor que você gostaria de depositar?"))
+                    quantidade = tratarErrosOP("Insira o valor no espaço abaixo:\n\n--> ")
+                    resultado = conta.depositar(quantidade)
+                    print(resultado)
+
+                case 3: #Fazer transferência
+                    print("-------TRANSFERÊNCIA-------")
+                    print((f"Você tem: R${conta.get_Saldo()}\n Qual valor que você gostaria de transferir?"))
+                    quantidade = tratarErrosOP("Insira o valor no espaço abaixo:\n\n--> ")
+                    num_conta = tratarErros("Insira o número da conta para qual você gostaria de realizar a transferência\n\n--> ")
+                    procedimento = conta.transferir(quantidade, banco.get_Clientes(num_conta))
+                    if procedimento == False:
+                        print("Não foi possível efetuar a transferência. Verifique se a conta destino existe")
+                case 4:
+                    pass
+                case 5:
+                    os.system("cls")
+                    print("Retornando ao menu inicial...")
+                    os.system("pause")
+                    os.system("cls")
+                    break
         except Exception as e:
             print("Erro", e)
 
@@ -128,13 +139,13 @@ def startmenu(banco: Banco):
     contas_opcoes = ["Conta corrente", "Conta poupança"]
     while True:
         try:
-            if not banco.get_Clientes():
+            if not banco.get_AllClientes():
                 # ========================== Criando o cliente
 
                 print(f"{banco.get_Nome()}\nPrimeira vez aqui? Faça seu cadastro")
-                cliente = cadastroCliente()
+                cliente = cadastroCliente(banco)
                 os.system("pause")
-                os.system("clear")
+                os.system("cls")
                 break
             
         except Exception as e:
@@ -150,16 +161,17 @@ def startmenu(banco: Banco):
                 case 1: #Criar conta
                     for num, opcao in enumerate(contas_opcoes, 1):
                         print(f"{num} - {opcao}")
-                        i = tratarErros("Selecione uma das contas acima a serem criadas\n--> ")
-                        match i:
-                            case 1: #Criar conta Corrente
-                                corrente = Corrente(cliente)
-                            case 2: #Criar conta Poupança
-                                poupanca = Poupanca(cliente)
+                    i = tratarErros("Selecione uma das contas acima a serem criadas\n--> ")
+                    match i:
+                        case 1: #Criar conta Corrente
+                                corrente = criar_Corrente(cliente)
+                        case 2: #Criar conta Poupança
+                                poupanca = criar_Poupanca(cliente)
 
                 case 2: #Acessar Conta existente
                     acesso = acessarConta(cliente)
-                    mainmenu(acesso) #Acessar conta com o return da conta da função acessarConta
+                    if acesso:
+                        mainmenu(acesso) #Acessar conta com o return da conta da função acessarConta
 
                 case 3: #Sair
                     print("Saindo...")

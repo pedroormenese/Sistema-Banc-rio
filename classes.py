@@ -28,9 +28,17 @@ class Banco:
     def cadastrar_Cliente(self, cliente: Cliente):
         self.__clientes.append(cliente)
 
-    def get_Clientes(self):
+    def get_Clientes(self, numero):
+        busca_cliente = False
+        for cliente in self.__clientes:
+            if cliente.get_Conta().get_Numero() == numero:
+                busca_cliente = True
+                return cliente.get_Conta()
+        if busca_cliente == False:
+            return False
+            
+    def get_AllClientes(self):
         return self.__clientes
-        
 
 
 # ========================================== Interface das operações financeiras
@@ -52,7 +60,6 @@ class OperacoesFinanceiras(ABC):
 class Conta(OperacoesFinanceiras): # ========================================== Classe conta, tipos de conta (Corrente e Poupança) e seus métodos
     _prox_numero = 1000
     @abstractmethod
-    
     def __init__(self, cpf: int, senha: str, saldo: float):
         
         self.__cpf = cpf
@@ -96,15 +103,15 @@ class Corrente(Conta): # ======================= Conta Corrente
 
     @override
     def get_Numero(self):
-        return self._Conta__numero
+        return self.__numero
     
     @override
     def get_CPF(self):
-        return self._Conta__cpf
+        return self.__cpf
     
     @override
     def get_Saldo(self):
-        return self._Conta__saldo
+        return self.__saldo
         
     @override
     def depositar(self, quantidade: float):
@@ -112,20 +119,20 @@ class Corrente(Conta): # ======================= Conta Corrente
     
     @override
     def get_Senha(self):
-        return self._Conta__senha
+        return self.__senha
     
     @override
     def sacar(self, quantidade: float):
-        if self.get_Saldo() - quantidade >= 0:
-            self.__saldo -= quantidade
+        if self._Conta__saldo - quantidade >= 0:
+            self._Conta__saldo -= quantidade
             return f"Saque realizado com sucesso\nSeu saldo agora é de {self.get_Saldo()}"
         else:
             return "Saldo insuficiente"
         
     @override
     def transferir(self, quantidade: float, conta: Conta):
-        if self.get_Saldo() - quantidade >= 0:
-            self.__saldo -= quantidade
+        if self._Conta__saldo - quantidade >= 0:
+            self._Conta__saldo -= quantidade
             conta.depositar(quantidade)
             return "Transferência realizada com sucesso"
         else:
@@ -139,25 +146,25 @@ class Poupanca(Conta): # ======================= Conta Poupança
 
     @override
     def get_Numero(self):
-        return self.__numero
+        return self._Conta__numero
 
     @override
     def get_CPF(self):
-        return self.__cpf
+        return self._Conta__cpf
 
     @override
     def get_Senha(self):
-        return self.__senha
+        return self._Conta__senha
     
     @override
     def get_Saldo(self):
-        return self.__saldo
+        return self._Conta__saldo
 
     @override
     def sacar(self, quantidade: float):
         if self.get_Saldo() >= 100:
             if quantidade <= self.get_Saldo():
-                self.__saldo -= quantidade
+                self._Conta__saldo -= quantidade
                 return "Saque realizado com sucesso"
             else:
                 return "Saldo insuficiente"
