@@ -44,7 +44,7 @@ def acessarConta(cliente: Cliente): # Função para acesso de conta
 
         conta = cliente.get_Conta(numero, senha)
         if conta:
-            print("Acesso concedido à conta Nº", {conta.get_Numero()})
+            print("Acesso concedido à conta Nº", conta.get_Numero())
             return conta
 
     except Exception as e:
@@ -59,12 +59,12 @@ def criar_Corrente(cliente: Cliente):
 def criar_Poupanca(cliente: Cliente):
     print("Criando conta Poupança")
     senha = input("Defina sua senha: ")
-    poupanca = Corrente(cliente.get_CPF(), senha, 0)
+    poupanca = Poupanca(cliente.get_CPF(), senha, 0)
     cliente.add_conta(poupanca)
 
 
 
-def mainmenu(cliente: Cliente):
+def mainmenu(conta: Conta):
     while True:
         try:
             opcoes = ["Sacar", "Depositar", "Transferência", "Extrato", "Sair"]
@@ -73,6 +73,21 @@ def mainmenu(cliente: Cliente):
                 i = tratarErros("Selecione uma opção\n--> ")
                 match i:
                     case 1:
+                        print("-------SAQUE-------")
+                        print((f"Você tem: R${conta.get_Saldo():.2f}\n Qual valor que você gostaria de sacar?"))
+                        quantidade = tratarErros("Insira o valor no espaço abaixo:\n\n-->")
+
+                        if quantidade <= 0:
+                            print("Valor inválido")
+                            os.system("pause")
+                            os.system("cls")
+                            continue
+                        
+                        resultado = conta.sacar(quantidade)
+                        print(resultado)
+                        
+
+
                         pass
                     case 2:
                         pass
