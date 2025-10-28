@@ -18,6 +18,18 @@ def tratarErros(mensagem: str):
             os.system("pause")
             os.system("cls")
 
+def tratarErrosOP(mensagem: str):
+    while True:
+        try:
+            mensagem = input(mensagem)
+            mensagem = float(mensagem)
+            return mensagem
+        except Exception:
+            os.system("cls")
+            print("Utilize somente números")
+            os.system("pause")
+            os.system("cls")
+
 
 def cadastroCliente(banco: Banco): # Função para cadastro de clientes
     while True:
@@ -72,10 +84,10 @@ def mainmenu(conta: Conta):
                 print(f"{num}. {opcao}\n")
                 i = tratarErros("Selecione uma opção\n--> ")
                 match i:
-                    case 1:
+                    case 1: #Fazer saque
                         print("-------SAQUE-------")
                         print((f"Você tem: R${conta.get_Saldo():.2f}\n Qual valor que você gostaria de sacar?"))
-                        quantidade = tratarErros("Insira o valor no espaço abaixo:\n\n-->")
+                        quantidade = tratarErros("Insira o valor no espaço abaixo:\n\n--> ")
 
                         if quantidade <= 0:
                             print("Valor inválido")
@@ -85,12 +97,13 @@ def mainmenu(conta: Conta):
                         
                         resultado = conta.sacar(quantidade)
                         print(resultado)
-                        
-
-
-                        pass
                     case 2:
-                        pass
+                        print("-------DEPÓSITO-------")
+                        print((f"Você tem: R${conta.get_Saldo():.2f}\n Qual valor que você gostaria de sacar?"))
+                        quantidade = tratarErrosOP("Insira o valor no espaço abaixo:\n\n--> ")
+                        resultado = conta.depositar(quantidade)
+                        print(resultado)
+                        
                     case 3:
                         pass
                     case 4:
