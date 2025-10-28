@@ -2,7 +2,9 @@ from classes import *
 import os
 
 banco = Banco("RoubaPoupança", "Xique-Xique Bahia")
-
+cliente1 = Cliente("Roberto", "Carlos", 12345678901, 69, "Ponta-Grossa")
+cliente2 = Cliente("Cleide", "Schwagnazer", 12354678901, 43, "Pitamanhagaba")
+cliente3 = Cliente("Valter", "Victor", 13245678901, 86, "Campos do Jordão")
 
 def tratarErros(mensagem: str):
     while True:
@@ -34,22 +36,65 @@ def cadastroCliente(banco: Banco): # Função para cadastro de clientes
             print("Erro", e)
 
 
-def acessarConta(self, cliente: Cliente): # Função para acesso de conta
+def acessarConta(cliente: Cliente): # Função para acesso de conta
     try:
         os.system("cls")
-        numero = tratarErros("Insira o número da conta: ")
+        numero = tratarErros("Insira o CPF da conta: ")
         senha = input("Insira a senha da conta: ")
 
         conta = cliente.get_Conta(numero, senha)
         if conta:
             print("Acesso concedido à conta Nº", {conta.get_Numero()})
+            return conta
 
     except Exception as e:
         print("Erro: ", e)
 
+def criar_Corrente(cliente: Cliente):
+    print("Criando conta Corrente")
+    senha = input("Defina sua senha: ")
+    corrente = Corrente(cliente.get_CPF(), senha, 0)
+    cliente.add_conta(corrente)
+
+def criar_Poupanca(cliente: Cliente):
+    print("Criando conta Poupança")
+    senha = input("Defina sua senha: ")
+    poupanca = Corrente(cliente.get_CPF(), senha, 0)
+    cliente.add_conta(poupanca)
 
 
-def menu(banco: Banco):
+
+def mainmenu(cliente: Cliente):
+    while True:
+        try:
+            opcoes = ["Sacar", "Depositar", "Transferência", "Extrato", "Sair"]
+            for num, opcao in enumerate(opcoes, 1):
+                print(f"{num}. {opcao}\n")
+                i = tratarErros("Selecione uma opção\n--> ")
+                match i:
+                    case 1:
+                        pass
+                    case 2:
+                        pass
+                    case 3:
+                        pass
+                    case 4:
+                        pass
+                    case 5:
+                        os.system("cls")
+                        print("Retornando ao menu inicial...")
+                        os.system("pause")
+                        os.system("cls")
+                        break
+        except Exception as e:
+            print("Erro", e)
+
+
+
+
+
+def startmenu(banco: Banco):
+
     # ================================== Definindo futuras opções
     opcoes = ["Criar conta", "Acessar conta existente", "Sair"]
     contas_opcoes = ["Conta corrente", "Conta poupança"]
@@ -80,23 +125,14 @@ def menu(banco: Banco):
                         i = tratarErros("Selecione uma das contas acima a serem criadas\n--> ")
                         match i:
                             case 1: #Criar conta Corrente
-                                
-                                #Fazer funções CRIAR_CONTA CORRENTE E CRIAR_CONTA POUPANÇA
-
-
-                                conta = Corrente()
+                                corrente = Corrente(cliente)
                             case 2: #Criar conta Poupança
-                                pass
+                                poupanca = Poupanca(cliente)
 
                 case 2: #Acessar Conta existente
-                    for num, opcao in enumerate(contas_opcoes, 1):
-                        print(f"{num} - {opcao}")
-                        i = tratarErros("Selecione uma conta a ser acessada\n--> ")
-                        match i:
-                            case 1: #Acessar conta Corrente
-                                pass
-                            case 2: #Acessar conta Poupança
-                                pass
+                    acesso = acessarConta(cliente)
+                    mainmenu(acesso) #Acessar conta com o return da conta da função acessarConta
+
                 case 3: #Sair
                     print("Saindo...")
                     os.system("pause")

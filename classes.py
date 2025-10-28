@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import override
+from datetime import *
 
 
 class Conta:
@@ -50,13 +51,20 @@ class OperacoesFinanceiras(ABC):
 
 class Conta(OperacoesFinanceiras): # ========================================== Classe conta, tipos de conta (Corrente e Poupança) e seus métodos
     @abstractmethod
-    def __init__(self, numero: int, senha: str, saldo: float):
-        self.__numero = numero
+    def __init__(self, cpf: int, senha: str, saldo: float):
+        _prox_numero = 1000
+        self.__cpf = cpf
         self.__senha = senha
         self.__saldo = saldo
+        self.__numero = Conta._prox_numero
+        _prox_numero += 1
 
     @abstractmethod
     def get_Numero(self):
+        pass
+
+    @abstractmethod
+    def get_CPF(self):
         pass
 
     @abstractmethod
@@ -67,15 +75,30 @@ class Conta(OperacoesFinanceiras): # ========================================== 
     def get_Senha(self):
         pass
 
+    @abstractmethod
+    def sacar(self, quantidade: float):
+        pass
+    
+    @abstractmethod
+    def depositar(self, quantidade: float): 
+        pass
+    
+    @abstractmethod
+    def transferir(self, quantidade: float, conta: Conta):
+        pass
 
 
 class Corrente(Conta): # ======================= Conta Corrente
-    def __init__(self, numero, senha, saldo):
-        super().__init__(numero, senha, saldo)
+    def __init__(self, cpf, senha, saldo):
+        super().__init__(cpf, senha, saldo)
 
     @override
     def get_Numero(self):
         return self.__numero
+    
+    @override
+    def get_CPF(self):
+        return self.__cpf
     
     @override
     def get_Saldo(self):
@@ -108,15 +131,17 @@ class Corrente(Conta): # ======================= Conta Corrente
 
 
 
-
-
 class Poupanca(Conta): # ======================= Conta Poupança
-    def __init__(self, numero, senha, saldo):
-        super().__init__(numero, senha, saldo)
+    def __init__(self, cpf, senha, saldo):
+        super().__init__(cpf, senha, saldo)
 
     @override
     def get_Numero(self):
         return self.__numero
+
+    @override
+    def get_CPF(self):
+        return self.__cpf
 
     @override
     def get_Senha(self):
@@ -194,16 +219,16 @@ class Cliente:
     
     def set_Endereco(self, endereco):
         self.__endereco = endereco
-    
+
     def add_conta(self, conta: Conta):
         self.__contas.append(conta)
-        print(f"Conta {conta.get_Numero()} associada ao cliente {self.get_Nome()} {self.get_Sobrenome()}")
+        print(f"Conta {conta.get_CPF()} associada ao cliente {self.get_Nome()} {self.get_Sobrenome()}")
 
-    def remover_conta(self, numero_conta: int):
+    def remover_conta(self, cpf: int):
         for conta in self.__contas:
-            if conta.get_Numero() == numero_conta:
+            if conta.get_CPF() == cpf:
                 self.__contas.remove(conta)
-                print(f"Conta {numero_conta} removida")
+                print(f"Conta {cpf} removida")
                 return
         print("Conta não encontrada")
 
@@ -221,9 +246,11 @@ class Cliente:
             else:
                 tipo = "Tipo desconhecido"
         
-            print(f"{i}. {tipo} Conta Nº: {conta.get_Numero()} | Saldo: R${conta.get_Saldo()}")
+            print(f"{i}. {tipo} Conta Nº: {conta.get_CPF()} | Saldo: R${conta.get_Saldo()}")
 
-    def get_Conta(self, numero: int, senha: str):
+    def get_Conta(self, cpf: int, senha: str):
         for conta in self.__contas:
-            if conta.get_Numero() == numero and conta.get_Senha() == senha:
+            if conta.get_CPF() == cpf and conta.get_Senha() == senha:
                 return conta
+            
+    
