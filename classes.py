@@ -50,14 +50,16 @@ class OperacoesFinanceiras(ABC):
 
 
 class Conta(OperacoesFinanceiras): # ========================================== Classe conta, tipos de conta (Corrente e Poupança) e seus métodos
+    _prox_numero = 1000
     @abstractmethod
+    
     def __init__(self, cpf: int, senha: str, saldo: float):
-        _prox_numero = 1000
+        
         self.__cpf = cpf
         self.__senha = senha
         self.__saldo = saldo
         self.__numero = Conta._prox_numero
-        _prox_numero += 1
+        Conta._prox_numero += 1
 
     @abstractmethod
     def get_Numero(self):
@@ -94,15 +96,15 @@ class Corrente(Conta): # ======================= Conta Corrente
 
     @override
     def get_Numero(self):
-        return self.__numero
+        return self._Conta__numero
     
     @override
     def get_CPF(self):
-        return self.__cpf
+        return self._Conta__cpf
     
     @override
     def get_Saldo(self):
-        return self.__saldo
+        return self._Conta__saldo
         
     @override
     def depositar(self, quantidade: float):
@@ -110,13 +112,13 @@ class Corrente(Conta): # ======================= Conta Corrente
     
     @override
     def get_Senha(self):
-        return self.__senha
+        return self._Conta__senha
     
     @override
     def sacar(self, quantidade: float):
         if self.get_Saldo() - quantidade >= 0:
             self.__saldo -= quantidade
-            return "Saque realizado com sucesso"
+            return f"Saque realizado com sucesso\nSeu saldo agora é de {self.get_Saldo()}"
         else:
             return "Saldo insuficiente"
         
@@ -253,4 +255,3 @@ class Cliente:
             if conta.get_CPF() == cpf and conta.get_Senha() == senha:
                 return conta
             
-    
