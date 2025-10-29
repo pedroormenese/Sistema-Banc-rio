@@ -1,21 +1,23 @@
 # Documentação Notion
-### ***Classes criadas e suas responsabilidades e a** visibilidade dos atributos e métodos e o motivo dessas escolhas*
+## Classes criadas e suas responsabilidades e a visibilidade dos atributos e métodos e o motivo dessas escolhas
 
-### ***—Classe banco (concreta)—***
+### Classe banco (concreta)
 
 Essa classe representa o banco é a gestão de seus clientes. 
 
 Sua responsabilidade é cadastrar os clientes e gerenciá-los.
 
-***Métodos —***
+**Métodos —**
 
 **get_nome e get_endereço :** tem a função de retornar o nome e o endereço de cada cliente.
 
 **cadastrar_Cliente :** tem a função de cadastrar novos clientes.
 
-**get_clientes :** Mostra a lista de clientes cadastrados.
+**get_clientes :** Retorna um cliente específico.
 
-***Atributos —***
+**get_clientes :** Retorna todos os clientes.
+
+**Atributos —**
 
 **__nome** = nome do banco 
 
@@ -25,13 +27,13 @@ Sua responsabilidade é cadastrar os clientes e gerenciá-los.
 
 ---
 
-### **—Classe cliente (concreta)—**
+### Classe cliente (concreta)
 
 Essa classe representa um cliente do banco e seu próprio gerenciamento.
 
 Ou seja, um cliente tem uma ou mais contas e tem a capacidade de gerenciá-las seguindo os métodos abaixo. 
 
-***Métodos —***
+**Métodos —**
 
 **add_conta :** Cria uma conta de cliente. 
 
@@ -41,16 +43,16 @@ Ou seja, um cliente tem uma ou mais contas e tem a capacidade de gerenciá-las s
 
 **Getters/Setters :** Acesso de dados pessoais de um cliente.
 
-***Atributos —*** 
+**Atributos —** 
 **__nome , __sobrenome , __cpf , __idade , __endereco** = São os dados pessoais dos clientes.
 
 ---
 
-### **—Classe OperacoesFinaceiras (abstrata)—**
+### Classe OperacoesFinaceiras (abstrata)
 
 Tem a responsabilidade de definir operações básicas que todas os tipos de conta devem ter.
 
-***Métodos —***  
+**Métodos —**
 
 sacar (quantidade) 
 
@@ -62,7 +64,7 @@ Isso garante que todos os tipos de conta (poupança e corrente) tenham esses mé
 
 ---
 
-### —Classe conta (abstrata)—
+### Classe conta (abstrata)
 
 É o modelo para os diferentes tipos de conta. 
 
@@ -70,13 +72,15 @@ Define o que toda conta bancária deve ter e fazer, mas não implementa diretame
 
 Herda **OperacoesFinanceiras,** que define os métodos sacar, depositar e transferir. 
 
-***Métodos —*** 
+**Métodos —**
 
 **Gets :** Precisam ser implementados por subclasses. 
 
 **sacar, depositar, saldo :** são definidos pela classe herdada (OperacoesFinanceiras).
 
-***Atributos —*** 
+**registrar_Extrato(descricao):** serve para registrar o histórico de operações financeiras no extrato da conta.
+
+**Atributos —**
 
 **__numero :** Representa o número da conta 
 
@@ -84,9 +88,10 @@ Herda **OperacoesFinanceiras,** que define os métodos sacar, depositar e transf
 
 **__saldo :** O saldo disponível.
 
+
 ---
 
-### **—Classe corrente (concreta)—**
+### Classe corrente (concreta)
 
 Representa uma conta corrente, que faz operações simples. 
 
@@ -102,13 +107,13 @@ Herda da classe **conta.**
 
 ---
 
-### **—Classe poupança (concreta)—**
+### Classe poupança (concreta)
 
 Herda da classe **conta.**
 
 Representa uma conta poupança, com os métodos abaixo:
 
-***Métodos —*** 
+**Métodos —**
 
 **depositar -** adiciona um valor ao saldo.
 
@@ -164,44 +169,50 @@ O motivo do uso da abstração foi para que novas contas possam ser criadas util
 
 ---
 
-### Encapsulamento —
+### Encapsulamento
 
-***Aplicação-***
+**Aplicação-**
 
 O (__) declara a privação dos atributos, que podem ser alterados apenas por métodos gets e setters
+
+O (_) declara que os atributos estarão protegidos, podendo ser alterados direcionalmente por métodos gets e setters em classes ou subclasses. No entanto, ainda é possível alterá-los diretamente, contudo não é recomendado.
 
 Ex: 
 
 self.__saldo → pode ser alterado por get_Saldo
 
-***Por que o encapsulamento foi utilizado?***
+**Por que o encapsulamento foi utilizado?**
 
 Foi utilizado com o intuito de proteger os dados de cada cliente, de modo a impedir que informações pessoais fossem alteradas por outras partes do código. 
 
 ---
 
-### Herança —
+### Herança 
 
-***Aplicação***-
+**Aplicação —**
 
 A classe conta herda os métodos de OperacoesFinanceiras, fazendo com que todas as contas repliquem o mesmo comportamento. 
 
 As classes Corrente e Poupança herdam da classe conta, isso permite que contas poupança e corrente tenham certos comportamentos padronizados. 
 
-***Por que a herança foi utilizada?***
+**Por que a herança foi utilizada?**
 
 A herança serve como um reaproveitamento de código, fazendo com que não seja necessário a repetição de um mesmo padrão várias vezes. 
 
 ---
 
-### Polimorfismo—
+### Polimorfismo
 
-***Aplicação-***
+**Aplicação —**
 
 O polimorfismo faz com que classes filhas, no caso Poupança e Corrente, implementem os mesmos métodos, mas de formas diferentes. 
 
 Ambas possuem métodos de saque, depósito e transferência. A diferença é que cada um aplica esses métodos com suas próprias condições. 
 
-***Por que usar o polimorfismo?***
+**Por que usar o polimorfismo?**
 
 Permite que o sistema leia as contas de forma padronizada, mas cada uma com suas particularidades.
+
+# Diagrama de Classes
+<img width="1003" height="1045" alt="image" src="https://github.com/user-attachments/assets/61902f9f-310f-446d-8846-32e3b84a766d" />
+
