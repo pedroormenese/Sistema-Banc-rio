@@ -31,9 +31,9 @@ class Banco:
     def get_Clientes(self, numero):
         busca_cliente = False
         for cliente in self.__clientes:
-            if cliente.get_Conta().get_Numero() == numero:
+            if cliente.get_Destinatario(numero):
                 busca_cliente = True
-                return cliente.get_Conta()
+                return cliente
         if busca_cliente == False:
             return False
             
@@ -59,14 +59,15 @@ class OperacoesFinanceiras(ABC):
 
 class Conta(OperacoesFinanceiras): # ========================================== Classe conta, tipos de conta (Corrente e Poupança) e seus métodos
     _prox_numero = 1000
-    @abstractmethod
+    #@abstractmethod
     def __init__(self, cpf: int, senha: str, saldo: float):
         
-        self.__cpf = cpf
-        self.__senha = senha
-        self.__saldo = saldo
-        self.__numero = Conta._prox_numero
+        self._cpf = cpf
+        self._senha = senha
+        self._saldo = saldo
+        self._numero = Conta._prox_numero
         Conta._prox_numero += 1
+        self._extrato = []
 
     @abstractmethod
     def get_Numero(self):
@@ -82,6 +83,10 @@ class Conta(OperacoesFinanceiras): # ========================================== 
 
     @abstractmethod
     def get_Senha(self):
+        pass
+
+    @abstractmethod
+    def get_Extrato(self):
         pass
 
     @abstractmethod
@@ -96,6 +101,10 @@ class Conta(OperacoesFinanceiras): # ========================================== 
     def transferir(self, quantidade: float, conta: Conta):
         pass
 
+    @abstractmethod
+    def registrar_Extrato(self, descricao):
+        pass
+
 
 class Corrente(Conta): # ======================= Conta Corrente
     def __init__(self, cpf, senha, saldo):
@@ -103,37 +112,53 @@ class Corrente(Conta): # ======================= Conta Corrente
 
     @override
     def get_Numero(self):
-        return self.__numero
+        return self._numero
     
     @override
     def get_CPF(self):
-        return self.__cpf
+        return self._cpf
     
     @override
     def get_Saldo(self):
-        return self.__saldo
-        
-    @override
-    def depositar(self, quantidade: float):
-        self.__saldo += quantidade
+        return self._saldo
     
     @override
     def get_Senha(self):
-        return self.__senha
+        return self._senha
+    
+    @override
+    def get_Extrato(self):
+        return self._extrato
+
+    @override
+    def registrar_Extrato(self, descricao):
+        data = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self._extrato.append(f"[{data}] {descricao}")
+
+    @override
+    def depositar(self, quantidade: float):
+        self._saldo += quantidade
+        extrato = f"Depósito no valor de R${quantidade}"
+        self.registrar_Extrato(extrato)
+        return f"Depósito de R${quantidade} efetuado com sucesso"
     
     @override
     def sacar(self, quantidade: float):
-        if self._Conta__saldo - quantidade >= 0:
-            self._Conta__saldo -= quantidade
-            return f"Saque realizado com sucesso\nSeu saldo agora é de {self.get_Saldo()}"
+        if self._saldo - quantidade >= 0:
+            self._saldo -= quantidade
+            extrato = f"Saque no valor de {quantidade}"
+            self.registrar_Extrato(extrato)
+            return f"Saque realizado com sucesso\nSeu saldo agora é de R${self.get_Saldo()}"
         else:
             return "Saldo insuficiente"
         
     @override
     def transferir(self, quantidade: float, conta: Conta):
-        if self._Conta__saldo - quantidade >= 0:
-            self._Conta__saldo -= quantidade
+        if self._saldo - quantidade >= 0:
+            self._saldo -= quantidade
             conta.depositar(quantidade)
+            extrato = f"Transferência de R${quantidade} para a conta Nº{conta.get_Numero()}"
+            self.registrar_Extrato(extrato)
             return "Transferência realizada com sucesso"
         else:
             return "Saldo insuficiente"
@@ -146,25 +171,36 @@ class Poupanca(Conta): # ======================= Conta Poupança
 
     @override
     def get_Numero(self):
-        return self._Conta__numero
+        return self._numero
 
     @override
     def get_CPF(self):
-        return self._Conta__cpf
+        return self._cpf
 
     @override
     def get_Senha(self):
-        return self._Conta__senha
+        return self._senha
     
     @override
     def get_Saldo(self):
-        return self._Conta__saldo
+        return self._saldo
+    
+    @override
+    def get_Extrato(self):
+        return self._extrato
+    
+    @override
+    def registrar_Extrato(self, descricao):
+        data = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self._extrato.append(f"[{data}] {descricao}")
 
     @override
     def sacar(self, quantidade: float):
         if self.get_Saldo() >= 100:
             if quantidade <= self.get_Saldo():
-                self._Conta__saldo -= quantidade
+                self._saldo -= quantidade
+                extrato = f"Saque no valor de {quantidade}"
+                self.registrar_Extrato(extrato)
                 return "Saque realizado com sucesso"
             else:
                 return "Saldo insuficiente"
@@ -173,14 +209,20 @@ class Poupanca(Conta): # ======================= Conta Poupança
         
     @override
     def depositar(self, quantidade: float):
-        self.__saldo += quantidade
+        self._saldo += quantidade
+        extrato = f"Depósito no valor de R${quantidade}"
+        self.registrar_Extrato(extrato)
+        return f"Depósito de R${quantidade} efetuado com sucesso"
+
 
     @override
     def transferir(self, quantidade: float, conta: Conta):
         if self.get_Saldo() >= 100:
             if quantidade <= self.get_Saldo():
-                quantidade -= self.__saldo
+                quantidade -= self._saldo
                 conta.depositar(quantidade)
+                extrato = f"Transferência no valor de R${quantidade} para a conta Nº{conta.get_Numero()}"
+                self.registrar_Extrato(extrato)
                 return "Transferência realizada com sucesso"
             else:
                 return "Saldo insuficiente"
@@ -231,7 +273,7 @@ class Cliente:
 
     def add_conta(self, conta: Conta):
         self.__contas.append(conta)
-        print(f"Conta {conta.get_CPF()} associada ao cliente {self.get_Nome()} {self.get_Sobrenome()}")
+        print(f"Conta {conta.get_Numero()} associada ao cliente {self.get_Nome()} {self.get_Sobrenome()}")
 
     def remover_conta(self, cpf: int):
         for conta in self.__contas:
@@ -257,8 +299,13 @@ class Cliente:
         
             print(f"{i}. {tipo} Conta Nº: {conta.get_CPF()} | Saldo: R${conta.get_Saldo()}")
 
-    def get_Conta(self, cpf: int, senha: str):
+    def get_Conta(self, numero: int, senha: str) -> Conta:
         for conta in self.__contas:
-            if conta.get_CPF() == cpf and conta.get_Senha() == senha:
+            if conta.get_Numero() == numero and conta.get_Senha() == senha:
+                return conta
+            
+    def get_Destinatario(self, numero):
+        for conta in self.__contas:
+            if conta.get_Numero() == numero:
                 return conta
             
